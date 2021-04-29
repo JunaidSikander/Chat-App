@@ -1,11 +1,10 @@
-import React, {useState} from "react";
+import React from "react";
 import {Button, Grid, TextField, Typography} from "@material-ui/core";
 import {Link} from "react-router-dom";
 import useStyles from 'styles/Join.styles'
 
-const Join = () => {
+const Join = ({state, setState}) => {
     const classes = useStyles();
-    const [state, setState] = useState({name: '', room: ''});
 
     const handleChange = (event) => setState({...state, [event.target.id]: event.target.value});
     return (
