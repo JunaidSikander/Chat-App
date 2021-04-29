@@ -1,8 +1,12 @@
 import React from 'react'
+import {BrowserRouter, Route} from "react-router-dom";
+import Join from "pages/Join";
 
 function App() {
   return (
-    <h1>Chat APP</h1>
+      <BrowserRouter>
+        <Route exact path='/' component={Join}/>
+      </BrowserRouter>
   );
 }
 
