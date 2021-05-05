@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from "react";
 import io from 'socket.io-client'
 import queryString from "query-string";
-import useStyles from 'styles/Chat.styles'
-import {AppBar, FormControl, Grid, IconButton, Input, InputAdornment, Toolbar, Typography} from "@material-ui/core";
+import useStyles from 'styles/chat'
+import {FormControl, Grid, Hidden, IconButton, Input, InputAdornment} from "@material-ui/core";
 import SendIcon from '@material-ui/icons/Send';
-import CancelIcon from '@material-ui/icons/Cancel';
-import Conversation from "components/Conversation";
+import {Conversation, Header, Sidebar} from "components";
 
 let socket;
 
@@ -14,8 +13,7 @@ const Chat = ({history, location, state, setState}) => {
     const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
-    const ENDPOINT = 'http://localhost:3131/'
-
+    const ENDPOINT = 'http://localhost:3131/';
 
     useEffect(() => {
         const {name, room} = queryString.parse(location.search);
@@ -24,7 +22,7 @@ const Chat = ({history, location, state, setState}) => {
         socket = io(ENDPOINT);
 
         socket.emit('join', {name, room}, (error) => {
-            if(error){
+            if (error) {
                 alert(error)
                 history.push('/');
             }
@@ -37,7 +35,7 @@ const Chat = ({history, location, state, setState}) => {
             setMessages(messages => [...messages, message]);
         });
 
-        socket.on('roomData', ({ users }) => {
+        socket.on('roomData', ({users}) => {
             setUsers(users);
         });
     }, [])
@@ -46,59 +44,45 @@ const Chat = ({history, location, state, setState}) => {
     const sendMessage = (event) => {
         event.preventDefault();
 
-        if(message) {
+        if (message) {
             socket.emit('sendMessage', message, () => setMessage(''));
         }
     }
 
     return (
-        <Grid container>
-            <Grid item>
-                <AppBar position='fixed'>
-                    <Toolbar variant='dense'>
-                        <Grid item container justify='space-between' alignItems='center'>
-                            <Grid item>
-                                <Typography className={classes.header} variant='h6'>
-                                    {state.room}
-                                </Typography>
-                            </Grid>
-                            <Grid item>
-                                <IconButton className={classes.header}
-                                            onClick={() => {
-                                                history.goBack();
-                                                setState({name: '', room: ''});
-                                            }}>
-                                    <CancelIcon/>
-                                </IconButton>
-                            </Grid>
-                        </Grid>
-                    </Toolbar>
-                </AppBar>
-                <div style={{margin: '3em'}}/>
-            </Grid>
-            <Grid item container>
-                {messages.map((message, index) => <Conversation key={index} index={index} user={state.name} message={message}/>)}
-            </Grid>
-                <Grid item container style={{paddingLeft: '1em'}}>
-                    <FormControl fullWidth variant='filled'>
-                        <Input
-                            id="message"
-                            type='text'
-                            placeholder='Type Message'
-                            onChange={(e) => setMessage(e.target.value)}
-                            onKeyPress={event => event.key === 'Enter' ? sendMessage(event) : null}
-                            value={message}
-                            endAdornment={
-                                <InputAdornment position='end'>
-                                    <IconButton onClick={(event => sendMessage(event))}>
-                                        <SendIcon/>
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                        />
-                    </FormControl>
+        <div className={classes.container}>
+            <Header/>
+            <Hidden xsDown>
+                <Sidebar users={users}/>
+            </Hidden>
+            <div className={classes.content}>
+                <Grid container className={classes.toolbarMargin}>
+                    <Grid item container>
+                        {messages.map((message, index) =>
+                            <Conversation key={index} index={index} user={state.name} message={message}/>)}
+                    </Grid>
+                    <Grid item container className={classes.inputContainer}>
+                        <FormControl fullWidth variant='filled'>
+                            <Input
+                                id="message"
+                                type='text'
+                                placeholder='Type Message'
+                                onChange={(e) => setMessage(e.target.value)}
+                                onKeyPress={event => event.key === 'Enter' ? sendMessage(event) : null}
+                                value={message}
+                                endAdornment={
+                                    <InputAdornment position='end'>
+                                        <IconButton onClick={(event => sendMessage(event))}>
+                                            <SendIcon/>
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                            />
+                        </FormControl>
+                    </Grid>
                 </Grid>
-        </Grid>
+            </div>
+        </div>
     )
 };
 

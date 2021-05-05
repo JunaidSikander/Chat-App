@@ -2,7 +2,7 @@ import React from 'react';
 import {Grid, Typography} from "@material-ui/core";
 import useStyles from "styles/Conversation.style";
 
-const Conversation = ({message, index, user}) => {
+export default function Conversation ({message, index, user}) {
     const classes = useStyles();
     const side = message.user.toLowerCase() === user.toLowerCase() ? 'right' : 'left'
     const attachClass = index => {
@@ -27,5 +27,3 @@ const Conversation = ({message, index, user}) => {
         </Grid>
     );
 };
-
-export default Conversation
