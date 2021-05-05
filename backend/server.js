@@ -8,8 +8,11 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {});
 const port = process.env.PORT || 3131;
 
+//Root Route
+app.get('/', (req, res) => res.send('Server Chat Api').status(200));
+
 //Initialize Socket Connection
-io.on('connection', (socket => {
+io.on('connect', ((socket) => {
     console.log('Connection Established');
 
     //Receive an event
@@ -20,6 +23,9 @@ io.on('connection', (socket => {
         //Return Callback with an error if occurs
         if(error) return callback(error);
 
+        //User Joining Room
+        socket.join(user.room);
+
         //Welcome new enrolled user
         socket.emit('message',
             {user: 'admin', text: `${user.name}, welcome to room ${user.room}`});
@@ -28,27 +34,32 @@ io.on('connection', (socket => {
          socket.broadcast.to(user.room).emit('message',
              {user: 'admin', text: `${user.name} has joined!`});
 
-        //User Joining Room
-        socket.join(user.room);
-        
+
+        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+
         callback();
     });
 
     // Listen sentMessage Event from frontend
-    socket.on('sentMessage', (message, callback) => {
+    socket.on('sendMessage', (message, callback) => {
         const user = getUser(socket.id);
+        console.log(user, 'SERVER');
 
         //send event message to a particular room
-        io.to(user.room).emit('message', { user: user.name, text: message })
+        io.to(user.room).emit('message', { user: user.name, text: message });
 
         callback();
     });
 
     // When User Disconnect from Socket
     socket.on('disconnect', () => {
-        console.log('User had left!!!');
+        const user = removeUser(socket.id);
+
+        if(user) {
+            io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
+            io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
+        }
     });
 }))
-app.get('/', (req, res) => res.send('Server Chat Api'))
 
 httpServer .listen(port, () => console.log(`Server is up on PORT ${port}`))
