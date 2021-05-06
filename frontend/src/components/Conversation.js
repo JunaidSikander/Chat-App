@@ -1,8 +1,8 @@
 import React from 'react';
-import {Grid, Typography} from "@material-ui/core";
+import {Grid, List, ListItemText, Typography} from "@material-ui/core";
 import useStyles from "styles/Conversation.style";
 
-export default function Conversation ({message, index, user}) {
+export default function Conversation({message, index, user}) {
     const classes = useStyles();
     const side = message.user.toLowerCase() === user.toLowerCase() ? 'right' : 'left'
     const attachClass = index => {
@@ -16,13 +16,21 @@ export default function Conversation ({message, index, user}) {
     };
 
     return (
-        <Grid item container justify={side === 'left' ? 'flex-start' : 'flex-end'}
-              style={{backgroundColor: ''}}>
+        <Grid item container justify={side === 'left' ? 'flex-start' : 'flex-end'}>
             <Grid item className={classes[`${side}Row`]}>
-                <Typography align={"left"}
-                            className={`${classes.msg} ${classes[side]} ${attachClass(index)}`}>
-                    {message.text}
-                </Typography>
+                <List>
+                    <ListItemText
+                        className={`${classes.msg} ${classes[side]} ${attachClass(index)}`}
+                        classes={{secondary: side === 'right' ? classes.secondaryText : ''}}
+                        primary={message.text}
+                        secondary={
+                            <Typography component='span'>
+                                {side === 'left'
+                                    ? <Grid item>user: {message.user} </Grid>
+                                    : <Grid item style={{color: '#DDD'}}>me</Grid>}
+                            </Typography>
+                        }/>
+                </List>
             </Grid>
         </Grid>
     );

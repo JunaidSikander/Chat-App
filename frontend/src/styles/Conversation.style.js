@@ -15,9 +15,6 @@ const conversationStyle = makeStyles(theme => ({
         margin: '.5rem',
         display: "inline-block",
         wordBreak: "break-all",
-        fontFamily:
-        // eslint-disable-next-line max-len
-            '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
     },
     left: {
         borderTopRightRadius: theme.spacing(2.5),
@@ -45,6 +42,9 @@ const conversationStyle = makeStyles(theme => ({
     },
     rightLast: {
         borderBottomRightRadius: theme.spacing(2.5)
+    },
+    secondaryText: {
+        color: '#DDD'
     }
 }));
 

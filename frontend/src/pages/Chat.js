@@ -57,11 +57,11 @@ const Chat = ({history, location, state, setState}) => {
             </Hidden>
             <div className={classes.content}>
                 <Grid container className={classes.toolbarMargin}>
-                    <Grid item container>
+                    <Grid item alignContent='flex-start' container>
                         {messages.map((message, index) =>
                             <Conversation key={index} index={index} user={state.name} message={message}/>)}
                     </Grid>
-                    <Grid item container className={classes.inputContainer}>
+                    <Grid item container alignItems='flex-end' className={classes.inputContainer}>
                         <FormControl fullWidth variant='filled'>
                             <Input
                                 id="message"
